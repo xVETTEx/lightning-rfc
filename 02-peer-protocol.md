@@ -787,9 +787,17 @@ is destined, is described in [BOLT #4](04-onion-routing.md).
 #### Requirements
 
 A sending node:
-  - MUST NOT offer `amount_msat` it cannot pay for in the
-remote commitment transaction at the current `feerate_per_kw` (see "Updating
-Fees") while maintaining its channel reserve.
+  - if it is _responsible_ for paying the Bitcoin fee:
+    - MUST NOT offer `amount_msat` it cannot pay for in the remote commitment
+    transaction at the current `feerate_per_kw` (see "Updating Fees") while
+    maintaining its channel reserve.
+    - MUST NOT offer `amount_msat` if the resulting balance doesn't allow it to
+    pay the fee for a future additional HTLC at `2*feerate_per_kw` while
+    maintaining its channel reserve.
+  - if it is _not responsible_ for paying the Bitcoin fee:
+    - MUST NOT offer `amount_msat` if the remote cannot pay the fee for the
+    updated commitment transaction at the current `feerate_per_kw` while
+    maintaining its channel reserve.
   - MUST offer `amount_msat` greater than 0.
   - MUST NOT offer `amount_msat` below the receiving node's `htlc_minimum_msat`
   - MUST set `cltv_expiry` less than 500000000.
@@ -855,6 +863,11 @@ seconds, and the protocol only supports an expiry in blocks.
 `amount_msat` is deliberately limited for this version of the
 specification; larger amounts are not necessary, nor wise, during the
 bootstrap phase of the network.
+
+The node _responsible_ for paying the Bitcoin fee has to maintain a small
+"additional reserve" on top of its reserve to accommodate a fee increase,
+otherwise the channel may end up in an unusable state
+(see [#728](https://github.com/lightningnetwork/lightning-rfc/issues/728)).
 
 ### Removing an HTLC: `update_fulfill_htlc`, `update_fail_htlc`, and `update_fail_malformed_htlc`
 
