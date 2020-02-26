@@ -30,10 +30,10 @@ network of channels.
 
 ### Channels
 
-Lightning works by establishing *channels*: two participants create a
+Lightning works by establishing *channels*: two or more participants create a
 Lightning payment channel that contains some amount of bitcoin (e.g.,
 0.1 bitcoin) that they've locked up on the Bitcoin network. It is
-spendable only with both their signatures.
+spendable only with their signatures.
 
 Initially they each hold a bitcoin transaction that sends all the
 bitcoin (e.g. 0.1 bitcoin) back to one party.  They can later sign a new bitcoin
